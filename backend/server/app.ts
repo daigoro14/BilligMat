@@ -2,6 +2,7 @@ const puppeteer = require("puppeteer")
 
 
 async function run() {
+
     const cookie = [
       {
         name:"OptanonAlertBoxClosed",
@@ -24,38 +25,17 @@ async function run() {
     const url = `https://www.willys.se/sok?q=${search}`
 
 
-    await page.goto(url, { waitUntil: ['load', 'domcontentloaded']})
+    await page.goto(url, { waitUntil: ['load', 'domcontentloaded'], timeout: 60000})
+
+    console.log('page loaded')
+
 
     for (let i = 0; i < cookie.length; i++) {
       await page.setCookie(cookie[i]);
     }
 
-    let cookieset = await page.cookies(url)
-    console.log(JSON.stringify(cookieset))
-
-    // await page.waitForSelector('[data-testid="product"]');
-
-
-    // await page.click('[data-testid="load-more-btn"]')
-
-    // SCREENSHOT
-    // await page.screenshot({ path: 'example.png' })
-    // await page.screenshot({ path: 'example.png', fullPage: true })
-
-
-
-    // const html = await page.content()
-
-    // console.log(html)
-
-    // const text = await page.evaluate(() => document.body.innerText)
-
-    // console.log(text)
-
-
-
-
-
+    // let cookieset = await page.cookies(url)
+    // console.log(JSON.stringify(cookieset))
 
   
     async function scrollBottomPage() {
@@ -87,7 +67,8 @@ async function run() {
         let loadedProducts = 0
 
         // Keep scrolling until the number of loaded products matches the total number of products
-        while (loadedProducts !== amountProducts) {
+        while (loadedProducts < amountProducts) {
+          console.log("stuck in the loop", loadedProducts, amountProducts)
           await scrollBottomPage();
           
           // Update the number of loaded products
@@ -106,34 +87,69 @@ async function run() {
       await page.screenshot({ path: 'example.png', fullPage: true})
 
 
-    // CONSOLE LOG EVERY PRODUCT
-    // const sortiment = await page.evaluate(() =>
-    //     Array.from(document.querySelectorAll('[data-testid="product"]'), (e) => ({
-    //         title: e.querySelector('.fvLpBT').innerText,
-    //         price: e.querySelector('.gIEzQM').innerText
-    //     }))
-    // )
-
-    // console.log(sortiment)
-
+    // GET PRODUCTS
     const sortiment = await page.evaluate(() =>
-  Array.from(document.querySelectorAll('[data-testid="product"]'), (e) => {
-    const titleElement = e.querySelector('.fvLpBT') as HTMLElement | null;
-    const priceElement = e.querySelector('.gIEzQM') as HTMLElement | null;
+        Array.from(document.querySelectorAll('[data-testid="product"]'), (e) => {
 
-    // Check if titleElement and priceElement exist before accessing their properties.
-    if (titleElement && priceElement) {
-      return {
-        title: titleElement.innerText,
-        price: priceElement.innerText,
-      };
-    } else {
-      return null; // Handle the case where elements are not found.
-    }
-  })
-);
+          const title = e.querySelector<HTMLDivElement>('.sc-dfc0c17a-6');
+          const info = e.querySelector<HTMLSpanElement>('.gIAiTA');
+          const image = e.querySelector<HTMLImageElement>('.dvcXsc img');
+          
 
-console.log(sortiment);
+          // REGULAR PRODUCTS
+          if (e.querySelector<HTMLDivElement>('.fOeffH')){
+            const priceInt = e.querySelector<HTMLSpanElement>('.fVzqtS');
+            const priceDec = e.querySelector<HTMLSpanElement>('.czApoH');
+            return {
+              ...(title && { title: title.innerText }),
+              ...(info && { info: info.innerText }),
+              ...(image && { image: image.getAttribute('src')}),
+              ...(priceInt && priceDec && { price: parseInt(priceInt.innerText) + (0.01 * parseInt(priceDec.innerText)) })
+            };
+
+          // SPECIAL OFFER, MULTIPLE FOR BETTER PRICE EXAMPLE 2 FOR 1
+          } else if (e.querySelector<HTMLDivElement>('.bIIDrS') && e.querySelector<HTMLDivElement>('.kDhKOX')) {
+            const message = e.querySelector<HTMLDivElement>('.kDhKOX')
+            const regularPrice = e.querySelector<HTMLSpanElement>('.bNSKGy');
+            const specialPriceInt = e.querySelector<HTMLSpanElement>('.fVzqtS');
+            const specialPriceDec = e.querySelector<HTMLSpanElement>('.czApoH');
+
+            const match = regularPrice?.innerText.match(/\d+,\d+/);
+            let price = 0
+            if(match) {
+              price = parseFloat(match[0].replace(',', '.'));
+            }
+
+            return {
+              ...(title && { title: title.innerText }),
+              ...(info && { info: info.innerText }),
+              ...(image && { image: image.getAttribute('src')}),
+              ...(price && { price: price }),
+              ...(message && { message: `${message.innerText} ${specialPriceInt?.innerText}.${specialPriceDec?.innerText}` }),
+              // ...(specialPriceInt && specialPriceDec && { specialPrice:  })
+            };
+          
+          // SPECIAL PRICE
+          } else if (e.querySelector<HTMLDivElement>('.bIIDrS')) {
+            const priceInt = e.querySelector<HTMLSpanElement>('.fVzqtS');
+            const priceDec = e.querySelector<HTMLSpanElement>('.czApoH');
+            return {
+              ...(title && { title: title.innerText }),
+              ...(info && { info: info.innerText }),
+              ...(image && { image: image.getAttribute('src')}),
+              ...(priceInt && priceDec && { price: parseInt(priceInt.innerText) + (0.01 * parseInt(priceDec.innerText)) })
+            };
+          }
+      })
+
+
+    )
+    
+
+    // Sometimes willys website will add related products which we dont want, this will only get the relevant products
+    const relevantSortiment = sortiment.slice(0, amountProducts)
+
+    console.log(relevantSortiment, amountProducts)
 
     await browser.close()
 }

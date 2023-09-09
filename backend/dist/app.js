@@ -30,21 +30,13 @@ function run() {
         yield page.setViewport({ width: 1280, height: 1024 });
         const search = "chili";
         const url = `https://www.willys.se/sok?q=${search}`;
-        yield page.goto(url, { waitUntil: ['load', 'domcontentloaded'] });
+        yield page.goto(url, { waitUntil: ['load', 'domcontentloaded'], timeout: 60000 });
+        console.log('page loaded');
         for (let i = 0; i < cookie.length; i++) {
             yield page.setCookie(cookie[i]);
         }
-        let cookieset = yield page.cookies(url);
-        console.log(JSON.stringify(cookieset));
-        // await page.waitForSelector('[data-testid="product"]');
-        // await page.click('[data-testid="load-more-btn"]')
-        // SCREENSHOT
-        // await page.screenshot({ path: 'example.png' })
-        // await page.screenshot({ path: 'example.png', fullPage: true })
-        // const html = await page.content()
-        // console.log(html)
-        // const text = await page.evaluate(() => document.body.innerText)
-        // console.log(text)
+        // let cookieset = await page.cookies(url)
+        // console.log(JSON.stringify(cookieset))
         function scrollBottomPage() {
             return __awaiter(this, void 0, void 0, function* () {
                 let originalOffset = 0;
@@ -73,36 +65,49 @@ function run() {
         });
         let loadedProducts = 0;
         // Keep scrolling until the number of loaded products matches the total number of products
-        while (loadedProducts !== amountProducts) {
+        while (loadedProducts < amountProducts) {
+            console.log("stuck in the loop", loadedProducts, amountProducts);
             yield scrollBottomPage();
             // Update the number of loaded products
             loadedProducts = yield page.evaluate(() => document.querySelectorAll('[data-testid="product"]').length);
         }
         console.log(loadedProducts, amountProducts);
         yield page.screenshot({ path: 'example.png', fullPage: true });
-        // CONSOLE LOG EVERY PRODUCT
-        // const sortiment = await page.evaluate(() =>
-        //     Array.from(document.querySelectorAll('[data-testid="product"]'), (e) => ({
-        //         title: e.querySelector('.fvLpBT').innerText,
-        //         price: e.querySelector('.gIEzQM').innerText
-        //     }))
-        // )
-        // console.log(sortiment)
+        // GET PRODUCTS
         const sortiment = yield page.evaluate(() => Array.from(document.querySelectorAll('[data-testid="product"]'), (e) => {
-            const titleElement = e.querySelector('.fvLpBT');
-            const priceElement = e.querySelector('.gIEzQM');
-            // Check if titleElement and priceElement exist before accessing their properties.
-            if (titleElement && priceElement) {
-                return {
-                    title: titleElement.innerText,
-                    price: priceElement.innerText,
-                };
+            const title = e.querySelector('.sc-dfc0c17a-6');
+            const info = e.querySelector('.gIAiTA');
+            const image = e.querySelector('.dvcXsc img');
+            console.log(image === null || image === void 0 ? void 0 : image.getAttribute('src'));
+            // REGULAR PRODUCTS
+            if (e.querySelector('.fOeffH')) {
+                const priceInt = e.querySelector('.fVzqtS');
+                const priceDec = e.querySelector('.czApoH');
+                return Object.assign(Object.assign(Object.assign(Object.assign({}, (title && { title: title.innerText })), (info && { info: info.innerText })), (image && { image: image.getAttribute('src') })), (priceInt && priceDec && { price: parseInt(priceInt.innerText) + (0.01 * parseInt(priceDec.innerText)) }));
+                // SPECIAL OFFER, MULTIPLE FOR BETTER PRICE EXAMPLE 2 FOR 1
             }
-            else {
-                return null; // Handle the case where elements are not found.
+            else if (e.querySelector('.bIIDrS') && e.querySelector('.kDhKOX')) {
+                const message = e.querySelector('.kDhKOX');
+                const regularPrice = e.querySelector('.bNSKGy');
+                const specialPriceInt = e.querySelector('.fVzqtS');
+                const specialPriceDec = e.querySelector('.czApoH');
+                const match = regularPrice === null || regularPrice === void 0 ? void 0 : regularPrice.innerText.match(/\d+,\d+/);
+                let price = 0;
+                if (match) {
+                    price = parseFloat(match[0].replace(',', '.'));
+                }
+                return Object.assign(Object.assign(Object.assign(Object.assign({}, (title && { title: title.innerText })), (info && { info: info.innerText })), (price && { price: price })), (message && { message: `${message.innerText} ${specialPriceInt === null || specialPriceInt === void 0 ? void 0 : specialPriceInt.innerText}.${specialPriceDec === null || specialPriceDec === void 0 ? void 0 : specialPriceDec.innerText}` }));
+                // SPECIAL PRICE
+            }
+            else if (e.querySelector('.bIIDrS')) {
+                const priceInt = e.querySelector('.fVzqtS');
+                const priceDec = e.querySelector('.czApoH');
+                return Object.assign(Object.assign(Object.assign({}, (title && { title: title.innerText })), (info && { info: info.innerText })), (priceInt && priceDec && { price: parseInt(priceInt.innerText) + (0.01 * parseInt(priceDec.innerText)) }));
             }
         }));
-        console.log(sortiment);
+        // Sometimes willys website will add related products which we dont want, this will only get the relevant products
+        const relevantSortiment = sortiment.slice(0, amountProducts);
+        console.log(relevantSortiment, amountProducts);
         yield browser.close();
     });
 }
