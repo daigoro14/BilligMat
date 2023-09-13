@@ -15,36 +15,39 @@ export default function GroceryProducts(props:any) {
   return (
     <div className={`${style.hideGroceryContent} ${showSelect ? style.groceryContent : ''}`}>
         <div className={style.groceryProducts}>
-          {grocery.map((item: any, index: any) => {
-          return (
-            <div
-              key={index}
-              className={style.productContainer}
-            >
-              <img src={item.image}/>
-              <div>
-                <h2>{item.title}</h2>
-                <p>{item.info}</p>
-                <span className={style.price}>{item.price}{item.unit}</span>
-                {item.message && 
-                <span className={style.specialPrice}>{item.message}</span>
-                }
-                {item.premium && 
-                <span className={style.specialPrice}>{`${item.specialPrice}${item.specialPriceUnit} ${item.premium}`}</span>
-                }
-                <p>{item.comparePrice}</p>
-              </div>
+          {grocery.length == 0 ? 
+            <div className={style.loader}></div>
+            :
+            grocery.map((item: any, index: any) => {
+              return (
+                <div
+                  key={index}
+                  className={style.productContainer}
+                >
+                  <img src={item.image}/>
+                  <div>
+                    <h2>{item.title}</h2>
+                    <p>{item.info}</p>
+                    <span className={style.price}>{item.price}{item.unit}</span>
+                    {item.message && 
+                    <span className={style.specialPrice}>{item.message}</span>
+                    }
+                    {item.premium && 
+                    <span className={style.specialPrice}>{`${item.specialPrice}${item.specialPriceUnit} ${item.premium}`}</span>
+                    }
+                    <p>{item.comparePrice}</p>
+                  </div>
 
 
-              {stores
-              .filter((store) => store.name === item.store)
-              .map((store) => {
-                return(
-                  <div className={style.logo} dangerouslySetInnerHTML={{ __html: store.logo}}></div>
-                )
-              })}
-            </div>
-          )
+                  {stores
+                  .filter((store) => store.name === item.store)
+                  .map((store) => {
+                    return(
+                      <div className={style.logo} dangerouslySetInnerHTML={{ __html: store.logo}}></div>
+                    )
+                  })}
+                </div>
+              )
           })}
         </div>
       </div>

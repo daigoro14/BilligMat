@@ -26,8 +26,6 @@ async function willys(search: any) {
 
     await page.goto(url, { waitUntil: ['load', 'domcontentloaded'], timeout: 60000})
 
-    console.log('page loaded')
-
 
     for (let i = 0; i < cookie.length; i++) {
       await page.setCookie(cookie[i]);
@@ -188,7 +186,6 @@ async function willys(search: any) {
     // Sometimes willys website will add related products which we dont want, this will only get the relevant products
     const results = sortiment.slice(0, amountProducts)
 
-    // console.log(relevantSortiment, amountProducts)
 
     await browser.close()
 

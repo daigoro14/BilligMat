@@ -17,7 +17,6 @@ export default function SelectStore(props: any) {
         }
       };
 
-      console.log(select)
 
   return (
     <div className={`${style.slideContent} ${showSelect ? style.hideSlideContent : ''}`}>

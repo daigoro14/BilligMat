@@ -33,7 +33,6 @@ function willys(search) {
         // const search = "chili"
         const url = `https://www.willys.se/sok?q=${search}`;
         yield page.goto(url, { waitUntil: ['load', 'domcontentloaded'], timeout: 60000 });
-        console.log('page loaded');
         for (let i = 0; i < cookie.length; i++) {
             yield page.setCookie(cookie[i]);
         }
@@ -126,7 +125,6 @@ function willys(search) {
         }));
         // Sometimes willys website will add related products which we dont want, this will only get the relevant products
         const results = sortiment.slice(0, amountProducts);
-        // console.log(relevantSortiment, amountProducts)
         yield browser.close();
         return {
             results

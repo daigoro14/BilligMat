@@ -12,12 +12,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const willys_1 = require("./webScraping/willys");
 const express = require('express');
 const router = express.Router();
-router.get('/willys', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/searchGrocery', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const search = req.query.search;
-        console.log(search);
-        const willysProducts = yield (0, willys_1.willys)(search);
-        res.json(willysProducts);
+        console.log(req.body.search, req.body.select);
+        const search = req.body.search;
+        const select = req.body.select;
+        const groceries = [];
+        if (select.includes('willys')) {
+            const willysProducts = yield (0, willys_1.willys)(search);
+            yield willysProducts.results.map((item) => {
+                groceries.push(item);
+            });
+            console.log(groceries);
+        }
+        res.json(groceries);
     }
     catch (error) {
         console.error(error);

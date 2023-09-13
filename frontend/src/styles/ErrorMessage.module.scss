@@ -1,0 +1,28 @@
+.errorContainer{
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(205, 13, 13, 0.538);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    height: 150px;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%);
+    z-index: 10;
+    transition: 0.5s;
+    position: fixed;
+}
+
+.hideError{
+    // display: none;
+    opacity: 0%;
+    visibility: hidden; /* Hide the div, making it non-existent in layout */
+}
+
+.showError{
+    visibility: visible; /* Hide the div, making it non-existent in layout */
+    // display: flex;
+    opacity: 100%;
+}

@@ -23,6 +23,10 @@
 }
 
 .groceryProducts{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     // height: 600px;
     width: 100%;
     // overflow: hidden;
@@ -38,6 +42,7 @@
     padding: 20px;
     img{
         border-radius: 10px;
+        margin-right: 10px;
     }
 }
 
@@ -55,14 +60,29 @@
     border-radius: 20px;
     font-size: 23px;
     font-weight: 500;
-    background-color: rgb(222, 98, 10);
+    background-color: rgb(250, 187, 15);
     padding: 10px;
 }
 
 .logo{
-    margin-left: auto; /* Push this child to the right */
-
+    margin-left: auto; 
     svg{
         height: 20px;
     }
 }
+
+.loader {
+
+    margin-top: 230px;
+    border: 30px solid #fbfafa; 
+    border-top: 30px solid #cb8ff0; 
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    animation: spin 2s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
