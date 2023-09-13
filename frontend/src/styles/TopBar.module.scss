@@ -1,0 +1,76 @@
+.topBar{
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    height: 100px;
+    backdrop-filter: blur(10px);
+    background-color: rgba(10, 33, 74, 0.627);
+}
+
+
+@mixin searchElements {
+    height: 28px;
+    border: 1px solid rgba(59, 58, 58, 0.579);
+}
+
+.searchDiv{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    input {
+        @include searchElements();
+        box-sizing: border-box;
+        width: 250px;
+        padding-left: 10px;
+        border-right: none;
+        border-radius: 30px 0 0 30px;
+    }
+    input:focus-visible{
+        outline: none;
+    }
+    button{
+        @include searchElements();
+        cursor: pointer;
+        width: 70px;
+        border-radius: 0px 30px 30px 0px; 
+    }
+}
+
+.storeButton{
+    cursor: pointer;
+    position: absolute;
+    right: 100px;
+    display: flex;
+    align-items: center;
+}
+
+.storeButton:hover h3{
+    transition: 0.3s;
+    color: rgb(180, 240, 255);
+}
+
+.storeButton:hover .arrow path{
+    transition: 0.3s;
+    stroke: rgb(180, 240, 255);
+}
+
+.arrow {
+    margin: 5px 0 0 5px;
+    transition: 0.3s;
+    width: 16px !important;
+    height: 16px !important;
+    path {
+        transition: 0.3s;
+    }
+}
+
+
+.arrowUp{
+    transform: rotate(-540deg);
+}
+
+.arrowDown{
+    transform: rotate(0deg);
+}
+

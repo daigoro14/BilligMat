@@ -1,0 +1,44 @@
+.slideContent {
+    top: 0px;
+    transition: 0.3s;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    opacity: 100%;
+}
+
+.hideSlideContent{
+    opacity: 0;
+    transition: 0.3s;
+    top: -100%;
+
+}
+
+.imageDiv {
+    box-shadow: 0px 4px 68px -21px rgba(0,0,0,0.31);
+    -webkit-box-shadow: 0px 4px 68px -21px rgba(0,0,0,0.31);
+    -moz-box-shadow: 0px 4px 68px -21px rgba(0,0,0,0.31);
+    border: 0px solid transparent;
+    transition: 0.3s;
+    cursor: pointer;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    height: 150px;
+    width: 150px;
+}
+
+.select{
+    transition: 0.3s;
+    border: 7px solid rgba(0, 162, 255, 0.432);
+}
+
+
+
+.willysSvg{
+    padding: 10px;
+}

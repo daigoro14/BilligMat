@@ -1,0 +1,68 @@
+.hideGroceryContent{
+    position: absolute;
+    // top: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    // background-color: orange;
+    opacity: 0;
+    transition: 0.3s;
+    bottom: -100%;
+    overflow-y: scroll;
+}
+
+.groceryContent{
+    opacity: 100%;
+    // overflow: hidden;
+    bottom: 0;
+    transition: 0.3s;
+
+}
+
+.groceryProducts{
+    // height: 600px;
+    width: 100%;
+    // overflow: hidden;
+    position: absolute;
+    top: 0px;
+}
+
+.productContainer{
+    height: 250px;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    padding: 20px;
+    img{
+        border-radius: 10px;
+    }
+}
+
+.price{
+    color: white;
+    border-radius: 20px;
+    font-size: 28px;
+    font-weight: 500;
+    background-color: rgb(44, 182, 39);
+    padding: 10px;
+}
+
+.specialPrice{
+    color: white;
+    border-radius: 20px;
+    font-size: 23px;
+    font-weight: 500;
+    background-color: rgb(222, 98, 10);
+    padding: 10px;
+}
+
+.logo{
+    margin-left: auto; /* Push this child to the right */
+
+    svg{
+        height: 20px;
+    }
+}
